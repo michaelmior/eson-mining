@@ -20,9 +20,9 @@ import de.metanome.algorithm_integration.results.FunctionalDependency
 import de.metanome.algorithm_integration.result_receiver.FunctionalDependencyResultReceiver
 
 class PrintingFunctionalDependencyReceiver extends FunctionalDependencyResultReceiver {
-  def acceptedResult(fd: FunctionalDependency): Boolean = true
+  override def acceptedResult(fd: FunctionalDependency): java.lang.Boolean = true
 
-  def receiveResult(fd: FunctionalDependency): Unit = {
+  override def receiveResult(fd: FunctionalDependency): Unit = {
     // scalastyle:off println
     println(fd.toString)
     // scalastyle:on println
