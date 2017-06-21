@@ -4,7 +4,7 @@ organization := "ca.uwaterloo.dsg"
 
 scalaVersion := "2.12.2"
 
-mainClass in Compile := Some("ca.uwaterloo.dsg.eson.TaneRunner")
+mainClass in Compile := Some("ca.uwaterloo.dsg.eson.DiscoveryRunner")
 
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.8.9",

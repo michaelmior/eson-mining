@@ -16,13 +16,14 @@
  */
 package ca.uwaterloo.dsg.eson
 
-import de.metanome.backend.input.database.{DefaultDatabaseConnectionGenerator, DefaultTableInputGenerator}
 import de.metanome.algorithm_integration.configuration.{ConfigurationSettingDatabaseConnection, ConfigurationSettingTableInput, DbSystem}
+import de.metanome.algorithms.binder.BINDERDatabase
 import de.metanome.algorithms.tane.TaneAlgorithm
+import de.metanome.backend.input.database.{DefaultDatabaseConnectionGenerator, DefaultTableInputGenerator}
 import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
-object TaneRunner {
+object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
     val connString = "jdbc:calcite:model=src/main/resources/model.json"
     val connectionProps = new Properties()
@@ -33,18 +34,28 @@ object TaneRunner {
     tables.next; tables.next // skip the header
     val tableNames = new scala.collection.mutable.MutableList[String]
     while (tables.next) {
-      tableNames += tables.getString(3)
+      tableNames += "\"" + tables.getString(3) + "\""
     }
 
     val db = new ConfigurationSettingDatabaseConnection(connString, "admin", "admin", DbSystem.Oracle)
 
     tableNames.foreach(tableName => {
-      val config = new ConfigurationSettingTableInput("\"" + tableName + "\"", db)
+      val config = new ConfigurationSettingTableInput(tableName, db)
       val table = new DefaultTableInputGenerator(config)
       val tane = new TaneAlgorithm()
       tane.setRelationalInputConfigurationValue(TaneAlgorithm.INPUT_TAG, table)
       tane.setResultReceiver(new PrintingFunctionalDependencyReceiver)
       tane.execute
     })
+
+    val binder = new BINDERDatabase()
+    val dbGen = new DefaultDatabaseConnectionGenerator(connString, "admin", "admin", DbSystem.Oracle)
+    binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_TYPE.name, BINDERDatabase.Database.CALCITE.name)
+    binder.setDatabaseConnectionGeneratorConfigurationValue(BINDERDatabase.Identifier.INPUT_DATABASE.name, dbGen)
+    binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_NAME.name, "rubis")
+    binder.setStringConfigurationValue(BINDERDatabase.Identifier.INPUT_TABLES.name, tableNames: _*)
+    binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
+    binder.setResultReceiver(new PrintingInclusionDependencyReceiver)
+    binder.execute
   }
 }
