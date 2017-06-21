@@ -6,10 +6,12 @@ scalaVersion := "2.12.2"
 
 mainClass in Compile := Some("ca.uwaterloo.dsg.eson.DiscoveryRunner")
 
+resolvers += Resolver.mavenLocal
+
 libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.8.9",
   "com.google.guava" % "guava" % "19.0",
   "it.unimi.dsi" % "fastutil" % "7.2.1",
-  "org.apache.calcite" % "calcite-cassandra" % "1.12.0",
+  "org.apache.calcite" % "calcite-cassandra" % "1.13.0-SNAPSHOT",
   "org.apache.lucene" % "lucene-core" % "4.6.0"
 )
