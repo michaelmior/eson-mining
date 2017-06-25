@@ -23,6 +23,22 @@ import de.metanome.backend.input.database.{DefaultDatabaseConnectionGenerator, D
 import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
+class PrivateMethodCaller(x: AnyRef, methodName: String) {
+  def apply(_args: Any*): Any = {
+    val args = _args.map(_.asInstanceOf[AnyRef])
+    def _parents: Stream[Class[_]] = Stream(x.getClass) #::: _parents.map(_.getSuperclass)
+    val parents = _parents.takeWhile(_ != null).toList
+    val methods = parents.flatMap(_.getDeclaredMethods)
+    val method = methods.find(_.getName == methodName).getOrElse(throw new IllegalArgumentException("Method " + methodName + " not found"))
+    method.setAccessible(true)
+    method.invoke(x, args : _*)
+  }
+}
+
+class PrivateMethodExposer(x: AnyRef) {
+  def apply(method: scala.Symbol): PrivateMethodCaller = new PrivateMethodCaller(x, method.name)
+}
+
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
     val connString = "jdbc:calcite:model=src/main/resources/model.json"
@@ -36,9 +52,9 @@ object DiscoveryRunner {
     while (tables.next) {
       tableNames += "\"" + tables.getString(3) + "\""
     }
+    conn.close
 
     val db = new ConfigurationSettingDatabaseConnection(connString, "admin", "admin", DbSystem.Oracle)
-
     tableNames.foreach(tableName => {
       val config = new ConfigurationSettingTableInput(tableName, db)
       val table = new DefaultTableInputGenerator(config)
@@ -50,6 +66,8 @@ object DiscoveryRunner {
 
     val binder = new BINDERDatabase()
     val dbGen = new DefaultDatabaseConnectionGenerator(connString, "admin", "admin", DbSystem.Oracle)
+    (new PrivateMethodExposer(dbGen))('connect)()
+    dbGen.getConnection.setAutoCommit(true)
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_TYPE.name, BINDERDatabase.Database.CALCITE.name)
     binder.setDatabaseConnectionGeneratorConfigurationValue(BINDERDatabase.Identifier.INPUT_DATABASE.name, dbGen)
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_NAME.name, "rubis")
