@@ -75,5 +75,7 @@ object DiscoveryRunner {
     binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
     binder.setResultReceiver(new PrintingInclusionDependencyReceiver)
     binder.execute
+
+    System.exit(0)
   }
 }

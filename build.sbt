@@ -15,3 +15,5 @@ libraryDependencies ++= Seq(
   "org.apache.calcite" % "calcite-cassandra" % "1.13.0-SNAPSHOT",
   "org.apache.lucene" % "lucene-core" % "4.6.0"
 )
+
+fork in run := true
