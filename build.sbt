@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.8.9",
   "com.google.guava" % "guava" % "19.0",
   "it.unimi.dsi" % "fastutil" % "7.2.1",
-  "org.apache.calcite" % "calcite-cassandra" % "1.13.0-SNAPSHOT",
+  "org.apache.calcite" % "calcite-cassandra" % "1.13.0",
   "org.apache.lucene" % "lucene-core" % "4.6.0"
 )
 
