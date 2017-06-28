@@ -54,13 +54,15 @@ object DiscoveryRunner {
     }
     conn.close
 
+    val receiver = new DependencyReceiver
+
     val db = new ConfigurationSettingDatabaseConnection(connString, "admin", "admin", DbSystem.Oracle)
     tableNames.foreach(tableName => {
       val config = new ConfigurationSettingTableInput(tableName, db)
       val table = new DefaultTableInputGenerator(config)
       val tane = new TaneAlgorithm()
       tane.setRelationalInputConfigurationValue(TaneAlgorithm.INPUT_TAG, table)
-      tane.setResultReceiver(new PrintingFunctionalDependencyReceiver)
+      tane.setResultReceiver(receiver)
       tane.execute
     })
 
@@ -73,7 +75,7 @@ object DiscoveryRunner {
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_NAME.name, "rubis")
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.INPUT_TABLES.name, tableNames: _*)
     binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
-    binder.setResultReceiver(new PrintingInclusionDependencyReceiver)
+    binder.setResultReceiver(receiver)
     binder.execute
 
     System.exit(0)
