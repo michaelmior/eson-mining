@@ -9,6 +9,7 @@ mainClass in Compile := Some("ca.uwaterloo.dsg.eson.DiscoveryRunner")
 resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
+  "com.datastax.cassandra" % "cassandra-driver-core" % "3.1.4",
   "com.fasterxml.jackson.core" % "jackson-annotations" % "2.8.9",
   "com.google.guava" % "guava" % "19.0",
   "it.unimi.dsi" % "fastutil" % "7.2.1",

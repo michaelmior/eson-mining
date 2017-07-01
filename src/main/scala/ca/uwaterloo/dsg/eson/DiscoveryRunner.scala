@@ -16,6 +16,8 @@
  */
 package ca.uwaterloo.dsg.eson
 
+import collection.JavaConverters._
+import com.datastax.driver.core.Cluster
 import de.metanome.algorithm_integration.configuration.{ConfigurationSettingDatabaseConnection, ConfigurationSettingTableInput, DbSystem}
 import de.metanome.algorithms.binder.BINDERDatabase
 import de.metanome.algorithms.tane.TaneAlgorithm
@@ -41,6 +43,11 @@ class PrivateMethodExposer(x: AnyRef) {
 
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
+    val session = Cluster.builder().addContactPoint("127.0.0.1").build().connect("rubis")
+    val keyspace = session.getCluster().getMetadata().getKeyspace("rubis")
+
+    println("$CQL = [")
+
     val connString = "jdbc:calcite:model=src/main/resources/model.json"
     val connectionProps = new Properties()
     connectionProps.put("user", "admin")
@@ -50,9 +57,34 @@ object DiscoveryRunner {
     tables.next; tables.next // skip the header
     val tableNames = new scala.collection.mutable.MutableList[String]
     while (tables.next) {
-      tableNames += "\"" + tables.getString(3) + "\""
+      val table = tables.getString(3)
+      tableNames += "\"" + table + "\""
+
+      val cassTable = keyspace.getTable(table)
+      val columns = cassTable.getColumns
+      println(s"  'CREATE COLUMNFAMILY rubis.${table}(' \\")
+      columns.asScala.map(column =>
+        println(s"  '${column.getName} ${column.getType.getName}, ' \\")
+      )
+
+      val pk = cassTable.getPartitionKey
+      val clustering = cassTable.getClusteringColumns
+      print("  'PRIMARY KEY(")
+      if (!clustering.isEmpty) {
+        print("(")
+      }
+      print(pk.asScala.map(_.getName).mkString(", "))
+      if (!clustering.isEmpty) {
+        print("), ")
+        print(clustering.asScala.map(_.getName).mkString(", "))
+        print(")")
+      }
+
+      println("));',\n")
     }
     conn.close
+
+    println("]")
 
     val receiver = new DependencyReceiver
 
@@ -77,6 +109,8 @@ object DiscoveryRunner {
     binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
     binder.setResultReceiver(receiver)
     binder.execute
+
+    receiver.output
 
     System.exit(0)
   }
