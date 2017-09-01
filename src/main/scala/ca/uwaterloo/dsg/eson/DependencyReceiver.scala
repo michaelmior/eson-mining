@@ -48,8 +48,10 @@ class DependencyReceiver extends FunctionalDependencyResultReceiver with Inclusi
       val depFields = ind.getDependant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
       val refTable = ind.getReferenced.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
       val refFields = ind.getReferenced.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
-      println(s"  IND.new('${depTable}', %w(${depFields.mkString(" ")}),")
-      println(s"          '${refTable}', %w(${refFields.mkString(" ")})),")
+      if (depTable != refTable) {
+        println(s"  IND.new('${depTable}', %w(${depFields.mkString(" ")}),")
+        println(s"          '${refTable}', %w(${refFields.mkString(" ")})),")
+      }
     }
     println("]")
 
