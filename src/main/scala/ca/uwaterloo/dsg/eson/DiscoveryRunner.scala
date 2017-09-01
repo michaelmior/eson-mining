@@ -46,8 +46,6 @@ object DiscoveryRunner {
     val session = Cluster.builder().addContactPoint("127.0.0.1").build().connect("rubis")
     val keyspace = session.getCluster().getMetadata().getKeyspace("rubis")
 
-    println("$CQL = [")
-
     val connString = "jdbc:calcite:model=src/main/resources/model.json"
     val connectionProps = new Properties()
     connectionProps.put("user", "admin")
@@ -62,29 +60,19 @@ object DiscoveryRunner {
 
       val cassTable = keyspace.getTable(table)
       val columns = cassTable.getColumns
-      println(s"  'CREATE COLUMNFAMILY rubis.${table}(' \\")
-      columns.asScala.map(column =>
-        println(s"  '${column.getName} ${column.getType.getName}, ' \\")
+
+      val pk = cassTable.getPartitionKey.asScala.map(_.getName)
+      val clustering = cassTable.getClusteringColumns.asScala.map(_.getName)
+      val keyFields = Set[String]() ++ pk ++ clustering
+
+      print(s"${table}(")
+      val fieldNames = columns.asScala.map(column =>
+        (if (keyFields(column.getName)) "*" else "") + column.getName
       )
-
-      val pk = cassTable.getPartitionKey
-      val clustering = cassTable.getClusteringColumns
-      print("  'PRIMARY KEY(")
-      if (!clustering.isEmpty) {
-        print("(")
-      }
-      print(pk.asScala.map(_.getName).mkString(", "))
-      if (!clustering.isEmpty) {
-        print("), ")
-        print(clustering.asScala.map(_.getName).mkString(", "))
-        print(")")
-      }
-
-      println("));',\n")
+      println(fieldNames.mkString(", ") + ")")
     }
+    println("")
     conn.close
-
-    println("]")
 
     val receiver = new DependencyReceiver
 

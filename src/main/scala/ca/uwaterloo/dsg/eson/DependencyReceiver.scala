@@ -42,29 +42,25 @@ class DependencyReceiver extends FunctionalDependencyResultReceiver with Inclusi
   }
 
   def output() {
-    println("$INDS = [")
+    fds.foreach { case (table, table_fds) =>
+      table_fds.filter(_.getDeterminant.getColumnIdentifiers.size > 0).foreach { fd =>
+        val detFields = fd.getDeterminant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
+        val depField = fd.getDependant.getColumnIdentifier
+        println(s"${table} ${detFields.mkString(", ")} -> ${depField}")
+      }
+    }
+
+    println("")
+
     inds.foreach { ind =>
       val depTable = ind.getDependant.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
       val depFields = ind.getDependant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
       val refTable = ind.getReferenced.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
       val refFields = ind.getReferenced.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
       if (depTable != refTable) {
-        println(s"  IND.new('${depTable}', %w(${depFields.mkString(" ")}),")
-        println(s"          '${refTable}', %w(${refFields.mkString(" ")})),")
+        print(s"${depTable}(${depFields.mkString(", ")}) <= ")
+        println(s"${refTable}(${refFields.mkString(", ")})")
       }
     }
-    println("]")
-
-    println("$FDS = {")
-    fds.foreach { case (table, table_fds) =>
-      println(s"  '${table}' => [")
-      table_fds.filter(_.getDeterminant.getColumnIdentifiers.size > 0).foreach { fd =>
-        val detFields = fd.getDeterminant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
-        val depField = fd.getDependant.getColumnIdentifier
-        println(s"    FD.new(%w(${detFields.mkString(" ")}), %w(${depField})),")
-      }
-      println("  ],")
-    }
-    println("}")
   }
 }
