@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "19.0",
   "it.unimi.dsi" % "fastutil" % "7.2.1",
   "org.apache.calcite" % "calcite-cassandra" % "1.13.0",
-  "org.apache.lucene" % "lucene-core" % "4.6.0"
+  "org.apache.lucene" % "lucene-core" % "4.6.0",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.0.2"
 )
 
 fork in run := true
