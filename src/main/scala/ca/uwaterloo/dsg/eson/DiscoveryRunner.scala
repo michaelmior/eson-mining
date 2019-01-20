@@ -43,6 +43,7 @@ class PrivateMethodExposer(x: AnyRef) {
 
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
+    Class.forName("org.apache.calcite.jdbc.Driver");
     val session = Cluster.builder().addContactPoint("127.0.0.1").build().connect("rubis")
     val keyspace = session.getCluster().getMetadata().getKeyspace("rubis")
 
