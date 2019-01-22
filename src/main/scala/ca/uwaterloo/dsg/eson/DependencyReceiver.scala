@@ -16,51 +16,6 @@
  */
 package ca.uwaterloo.dsg.eson
 
-import collection.JavaConverters._
-import scala.collection.mutable.{HashMap, MutableList}
-
-import de.metanome.algorithm_integration.results.{FunctionalDependency, InclusionDependency}
 import de.metanome.algorithm_integration.result_receiver.{FunctionalDependencyResultReceiver, InclusionDependencyResultReceiver}
 
-class DependencyReceiver extends FunctionalDependencyResultReceiver with InclusionDependencyResultReceiver {
-  val fds = new HashMap[String, MutableList[FunctionalDependency]]
-  val inds = new MutableList[InclusionDependency]
-
-  override def acceptedResult(fd: FunctionalDependency): java.lang.Boolean = true
-  override def acceptedResult(ind: InclusionDependency): java.lang.Boolean = true
-
-  override def receiveResult(fd: FunctionalDependency): Unit = {
-    val table = fd.getDependant.getTableIdentifier
-    if (!fds.contains(table)) {
-      fds(table) = new MutableList[FunctionalDependency]
-    }
-    fds(table) += fd
-  }
-
-  override def receiveResult(ind: InclusionDependency): Unit = {
-    inds += ind
-  }
-
-  def output() {
-    fds.foreach { case (table, table_fds) =>
-      table_fds.filter(_.getDeterminant.getColumnIdentifiers.size > 0).foreach { fd =>
-        val detFields = fd.getDeterminant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
-        val depField = fd.getDependant.getColumnIdentifier
-        println(s"${table} ${detFields.mkString(", ")} -> ${depField}")
-      }
-    }
-
-    println("")
-
-    inds.foreach { ind =>
-      val depTable = ind.getDependant.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
-      val depFields = ind.getDependant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
-      val refTable = ind.getReferenced.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
-      val refFields = ind.getReferenced.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
-      if (depTable != refTable) {
-        print(s"${depTable}(${depFields.mkString(", ")}) <= ")
-        println(s"${refTable}(${refFields.mkString(", ")})")
-      }
-    }
-  }
-}
+trait DependencyReceiver extends InclusionDependencyResultReceiver with FunctionalDependencyResultReceiver

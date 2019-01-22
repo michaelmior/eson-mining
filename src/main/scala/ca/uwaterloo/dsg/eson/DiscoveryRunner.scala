@@ -19,6 +19,7 @@ package ca.uwaterloo.dsg.eson
 import collection.JavaConverters._
 import com.datastax.driver.core.Cluster
 import de.metanome.algorithm_integration.configuration.{ConfigurationSettingDatabaseConnection, ConfigurationSettingTableInput, DbSystem}
+import de.metanome.algorithm_integration.result_receiver.{FunctionalDependencyResultReceiver, InclusionDependencyResultReceiver}
 import de.metanome.algorithms.binder.BINDERDatabase
 import de.metanome.algorithms.tane.TaneAlgorithm
 import de.metanome.backend.input.database.{DefaultDatabaseConnectionGenerator, DefaultTableInputGenerator}
@@ -43,6 +44,14 @@ class PrivateMethodExposer(x: AnyRef) {
 
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
+    val receiver = new PrintingDependencyReceiver
+    run(receiver)
+    receiver.output
+
+    System.exit(0)
+  }
+
+  def run(receiver: DependencyReceiver) {
     Class.forName("org.apache.calcite.jdbc.Driver");
     val session = Cluster.builder().addContactPoint("127.0.0.1").build().connect("rubis")
     val keyspace = session.getCluster().getMetadata().getKeyspace("rubis")
@@ -75,8 +84,6 @@ object DiscoveryRunner {
     println("")
     conn.close
 
-    val receiver = new DependencyReceiver
-
     val db = new ConfigurationSettingDatabaseConnection(connString, "admin", "admin", DbSystem.Oracle)
     tableNames.foreach(tableName => {
       val config = new ConfigurationSettingTableInput(tableName, db)
@@ -98,9 +105,5 @@ object DiscoveryRunner {
     binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
     binder.setResultReceiver(receiver)
     binder.execute
-
-    receiver.output
-
-    System.exit(0)
   }
 }
