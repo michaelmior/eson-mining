@@ -25,6 +25,8 @@ libraryDependencies ++= Seq(
 
 assemblyMergeStrategy in assembly := {
   case PathList("asm-license.txt") => MergeStrategy.discard
+  case PathList("LICENSE") => MergeStrategy.discard
+  case PathList("NOTICE") => MergeStrategy.discard
   case PathList("META-INF", xs @_ *) => MergeStrategy.discard
   case PathList("com", "fasterxml", "jackson", xs @ _*) => MergeStrategy.first
   case PathList("com", "google", "common", xs @ _*) => MergeStrategy.first
