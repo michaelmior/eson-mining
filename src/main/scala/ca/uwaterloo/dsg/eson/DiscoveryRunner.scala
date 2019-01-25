@@ -45,18 +45,19 @@ class PrivateMethodExposer(x: AnyRef) {
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
     val receiver = new PrintingDependencyReceiver
-    run(receiver)
+    run("127.0.0.1", 9042, "rubis", receiver)
     receiver.output
 
     System.exit(0)
   }
 
-  def run(receiver: DependencyReceiver) {
+  def run(host: String, port: Integer, keyspaceName: String, receiver: DependencyReceiver) {
     Class.forName("org.apache.calcite.jdbc.Driver");
-    val session = Cluster.builder().addContactPoint("127.0.0.1").build().connect("rubis")
-    val keyspace = session.getCluster().getMetadata().getKeyspace("rubis")
+    val session = Cluster.builder().addContactPoint(host).withPort(port).build().connect(keyspaceName)
+    val keyspace = session.getCluster().getMetadata().getKeyspace(keyspaceName)
 
-    val connString = "jdbc:calcite:model=src/main/resources/model.json"
+    val connString = "jdbc:calcite:schemaFactory=org.apache.calcite.adapter.cassandra.CassandraSchemaFactory; schema.host=" +
+                     host + "; schema.port=" + port + "; schema.keyspace=" + keyspaceName
     val connectionProps = new Properties()
     connectionProps.put("user", "admin")
     connectionProps.put("password", "admin")
