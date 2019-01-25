@@ -67,20 +67,22 @@ object DiscoveryRunner {
     val tableNames = new scala.collection.mutable.MutableList[String]
     while (tables.next) {
       val table = tables.getString(3)
-      tableNames += "\"" + table + "\""
+      val cassTable = keyspace.getTable("\"" + table + "\"")
 
-      val cassTable = keyspace.getTable(table)
-      val columns = cassTable.getColumns
+      if (cassTable != null) {
+        tableNames += "\"" + table + "\""
+        val columns = cassTable.getColumns
 
-      val pk = cassTable.getPartitionKey.asScala.map(_.getName)
-      val clustering = cassTable.getClusteringColumns.asScala.map(_.getName)
-      val keyFields = Set[String]() ++ pk ++ clustering
+        val pk = cassTable.getPartitionKey.asScala.map(_.getName)
+        val clustering = cassTable.getClusteringColumns.asScala.map(_.getName)
+        val keyFields = Set[String]() ++ pk ++ clustering
 
-      print(s"${table}(")
-      val fieldNames = columns.asScala.map(column =>
-        (if (keyFields(column.getName)) "*" else "") + column.getName
-      )
-      println(fieldNames.mkString(", ") + ")")
+        print(s"${table}(")
+        val fieldNames = columns.asScala.map(column =>
+          (if (keyFields(column.getName)) "*" else "") + column.getName
+        )
+        println(fieldNames.mkString(", ") + ")")
+      }
     }
     println("")
     conn.close
