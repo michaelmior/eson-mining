@@ -8,6 +8,7 @@ mainClass in Compile := Some("ca.uwaterloo.dsg.eson.DiscoveryRunner")
 
 resolvers += Resolver.mavenLocal
 resolvers += "michaelmior-Metanome" at "https://packagecloud.io/michaelmior/Metanome/maven2"
+resolvers += "michaelmior-Metanome" at "https://packagecloud.io/michaelmior/calcite-snapshot/maven2"
 
 libraryDependencies ++= Seq(
   "com.datastax.cassandra" % "cassandra-driver-core" % "3.6.0",
