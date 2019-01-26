@@ -103,7 +103,7 @@ object DiscoveryRunner {
     dbGen.getConnection.setAutoCommit(true)
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_TYPE.name, BINDERDatabase.Database.CALCITE.name)
     binder.setDatabaseConnectionGeneratorConfigurationValue(BINDERDatabase.Identifier.INPUT_DATABASE.name, dbGen)
-    binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_NAME.name, "rubis")
+    binder.setStringConfigurationValue(BINDERDatabase.Identifier.DATABASE_NAME.name, "adhoc")
     binder.setStringConfigurationValue(BINDERDatabase.Identifier.INPUT_TABLES.name, tableNames: _*)
     binder.setBooleanConfigurationValue(BINDERDatabase.Identifier.DETECT_NARY.name, true)
     binder.setResultReceiver(receiver)
