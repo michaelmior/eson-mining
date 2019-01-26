@@ -22,26 +22,29 @@ import scala.collection.mutable.{HashMap, MutableList}
 import de.metanome.algorithm_integration.results.{FunctionalDependency, InclusionDependency}
 
 class PrintingDependencyReceiver extends DependencyReceiver {
-  val fds = new HashMap[String, MutableList[FunctionalDependency]]
-  val inds = new MutableList[InclusionDependency]
+  val _fds = new HashMap[String, MutableList[FunctionalDependency]]
+  val _inds = new MutableList[InclusionDependency]
+
+  def fds: Iterable[FunctionalDependency] = _fds.values.flatten
+  def inds: Iterable[InclusionDependency] = _inds
 
   override def acceptedResult(fd: FunctionalDependency): java.lang.Boolean = true
   override def acceptedResult(ind: InclusionDependency): java.lang.Boolean = true
 
   override def receiveResult(fd: FunctionalDependency): Unit = {
     val table = fd.getDependant.getTableIdentifier
-    if (!fds.contains(table)) {
-      fds(table) = new MutableList[FunctionalDependency]
+    if (!_fds.contains(table)) {
+      _fds(table) = new MutableList[FunctionalDependency]
     }
-    fds(table) += fd
+    _fds(table) += fd
   }
 
   override def receiveResult(ind: InclusionDependency): Unit = {
-    inds += ind
+    _inds += ind
   }
 
   def output() {
-    fds.foreach { case (table, table_fds) =>
+    _fds.foreach { case (table, table_fds) =>
       table_fds.filter(_.getDeterminant.getColumnIdentifiers.size > 0).foreach { fd =>
         val detFields = fd.getDeterminant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
         val depField = fd.getDependant.getColumnIdentifier
@@ -51,7 +54,7 @@ class PrintingDependencyReceiver extends DependencyReceiver {
 
     println("")
 
-    inds.foreach { ind =>
+    _inds.foreach { ind =>
       val depTable = ind.getDependant.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
       val depFields = ind.getDependant.getColumnIdentifiers.asScala.map(_.getColumnIdentifier)
       val refTable = ind.getReferenced.getColumnIdentifiers.get(0).getTableIdentifier.replaceAll("^\"|\"$", "")
