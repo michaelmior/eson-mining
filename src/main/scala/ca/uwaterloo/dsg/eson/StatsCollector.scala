@@ -42,13 +42,13 @@ object StatsCollector {
       println(s"${table} ${rows}")
       columns.foreach { column =>
         val columnName = column("columnName").toString
-        val distinct = sql"""SELECT COUNT(DISTINCT "${SQLSyntax.createUnsafely(columnName)}") """ +
-                       sql"""FROM "${SQLSyntax.createUnsafely(table)}"""".map(_.int(1)).single.apply().get
+        val distinct = sql"""SELECT COUNT(DISTINCT "${SQLSyntax.createUnsafely(columnName)}")
+                             FROM "${SQLSyntax.createUnsafely(table)}"""".map(_.int(1)).single.apply().get
         val maxLength = if (column("typeName").toString startsWith "CHAR(1)") {
           1
         } else {
-          sql"""SELECT MAX(CHAR_LENGTH(CAST("${SQLSyntax.createUnsafely(columnName)}" AS VARCHAR(999999999)))) """ +
-          sql"""FROM "${SQLSyntax.createUnsafely(table)}"""".map(_.int(1)).single.apply().get
+          sql"""SELECT MAX(CHAR_LENGTH(CAST("${SQLSyntax.createUnsafely(columnName)}" AS VARCHAR(999999999))))
+                FROM "${SQLSyntax.createUnsafely(table)}"""".map(_.int(1)).single.apply().get
         }
         println(s"${table} ${columnName} ${distinct} ${maxLength}")
       }
