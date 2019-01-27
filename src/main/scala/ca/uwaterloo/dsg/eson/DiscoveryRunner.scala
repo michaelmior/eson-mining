@@ -22,6 +22,8 @@ import de.metanome.algorithm_integration.result_receiver.{FunctionalDependencyRe
 import de.metanome.algorithms.binder.BINDERDatabase
 import de.metanome.algorithms.tane.TaneAlgorithm
 import de.metanome.backend.input.database.{DefaultDatabaseConnectionGenerator, DefaultTableInputGenerator}
+import scopt.OParser
+
 import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
@@ -41,13 +43,43 @@ class PrivateMethodExposer(x: AnyRef) {
   def apply(method: scala.Symbol): PrivateMethodCaller = new PrivateMethodCaller(x, method.name)
 }
 
+case class Config(
+  host: String = "127.0.0.1",
+  port: Int = 9042,
+  keyspace: String = "")
+
 object DiscoveryRunner {
   def main(args: Array[String]): Unit = {
-    val receiver = new PrintingDependencyReceiver
-    run("127.0.0.1", 9042, "rubis", receiver)
-    receiver.output
+    val builder = OParser.builder[Config]
+    val parser = {
+      import builder._
+      OParser.sequence(
+        programName("discovery-runner"),
+        opt[String]('h', "host")
+          .action((x, c) => c.copy(host = x))
+          .text("Cassandra host"),
+        opt[Int]('p', "port")
+          .action((x, c) => c.copy(port = x))
+          .text("Cassandra port"),
+        opt[String]('k', "keyspace")
+          .required()
+          .action((x, c) => c.copy(keyspace = x))
+          .text("Cassandra keyspace")
+      )
+    }
 
-    System.exit(0)
+    OParser.parse(parser, args, Config()) match {
+      case Some(config) =>
+        val receiver = new PrintingDependencyReceiver
+        println(config.host)
+        println(config.port)
+        println(config.keyspace)
+        run(config.host, config.port, config.keyspace, receiver)
+        receiver.output
+
+        System.exit(0)
+      case _ =>
+    }
   }
 
   def run(host: String, port: Integer, keyspaceName: String, receiver: DependencyReceiver) {
