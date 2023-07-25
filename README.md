@@ -1,6 +1,6 @@
 # ESON Mining
 
-[![Build Status](https://travis-ci.com/michaelmior/eson-mining.svg?token=rM4RuzPrnmeRRxXcrK4C&branch=main)](https://travis-ci.com/michaelmior/eson-mining)
+[![CI](https://github.com/michaelmior/eson-mining/actions/workflows/ci.yml/badge.svg)](https://github.com/michaelmior/eson-mining/actions/workflows/ci.yml)
 
 Dependency mining for use with the [ESON](https://github.com/michaelmior/eson) normalization tool.
 Currently functional and inclusion dependencies can be mined from Cassandra database instances.

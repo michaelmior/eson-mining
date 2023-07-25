@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Coursier cache
+      uses: coursier/cache-action@v6
+    - uses: coursier/setup-action@v1
+      with:
+        jvm: adopt:8
+        apps: sbt scala
+    - name: Scalastyle
+      run: sbt scalastyle
+    - name: Test
+      run: sbt test
