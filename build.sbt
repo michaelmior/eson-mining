@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   "de.metanome.algorithms.tane" % "TANE" % "1.2-calcite-SNAPSHOT",
   "de.uni-potsdam.hpi" % "dao" % "0.0.1-calcite-SNAPSHOT",
   "de.uni-potsdam.hpi" % "utils" % "0.0.1-calcite-SNAPSHOT",
-  "org.apache.calcite" % "calcite-cassandra" % "1.19.0-SNAPSHOT",
+  "org.apache.calcite" % "calcite-cassandra" % "1.19.0",
   "org.scalikejdbc" %% "scalikejdbc" % "3.0.2",
 
   "org.cassandraunit" % "cassandra-unit" % "3.3.0.2" % Test,
