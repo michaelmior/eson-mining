@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc" % "3.0.2",
 
   "org.cassandraunit" % "cassandra-unit" % "3.3.0.2" % Test,
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test
+  "org.scalatest" %% "scalatest" % "3.0.9" % Test
 )
 
 logBuffered in Test := false
