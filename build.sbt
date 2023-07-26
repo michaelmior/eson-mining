@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
   "de.uni-potsdam.hpi" % "dao" % "0.0.1-calcite-SNAPSHOT",
   "de.uni-potsdam.hpi" % "utils" % "0.0.1-calcite-SNAPSHOT",
   "org.apache.calcite" % "calcite-cassandra" % "1.19.0-SNAPSHOT",
-  "org.scalikejdbc" %% "scalikejdbc" % "3.0.2",
+  "org.scalikejdbc" %% "scalikejdbc" % "3.5.0",
 
   "org.cassandraunit" % "cassandra-unit" % "3.3.0.2" % Test,
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
