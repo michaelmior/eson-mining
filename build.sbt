@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "org.apache.calcite" % "calcite-cassandra" % "1.19.0-SNAPSHOT",
   "org.scalikejdbc" %% "scalikejdbc" % "3.0.2",
 
-  "org.cassandraunit" % "cassandra-unit" % "3.3.0.2" % Test,
+  "org.cassandraunit" % "cassandra-unit" % "3.11.2.0" % Test,
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
 
