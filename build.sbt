@@ -13,7 +13,7 @@ resolvers += "michaelmior-Metanome" at "https://packagecloud.io/michaelmior/calc
 libraryDependencies ++= Seq(
   "com.datastax.cassandra" % "cassandra-driver-core" % "3.6.0",
   "com.github.scopt" %% "scopt" % "4.0.0-RC2",
-  "com.google.guava" % "guava" % "23.6-jre",
+  "com.google.guava" % "guava" % "23.6.1-jre",
   "de.metanome" % "algorithm_integration" % "1.2-calcite-SNAPSHOT",
   "de.metanome" % "backend" % "1.2-calcite-SNAPSHOT",
   "de.metanome.algorithms.binder" % "BINDERAlgorithm" % "1.2-calcite-SNAPSHOT",
