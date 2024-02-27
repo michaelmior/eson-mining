@@ -2,7 +2,7 @@ name         := "ESON Mining"
 version      := "0.1.0-SNAPSHOT"
 organization := "ca.uwaterloo.dsg"
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.19"
 
 mainClass in Compile := Some("ca.uwaterloo.dsg.eson.DiscoveryRunner")
 
